@@ -1,23 +1,40 @@
 pipeline {
     agent { label 'python-agent' }
     stages {
-        stage('Install deps') {
+        stage('Container Alerts: Install deps') {
+            when { changeset "scripts/container-service-alerts/**" }
             steps {
                 sh '''
                     cd scripts/container-service-alerts
                     pip install -r requirements.txt --break-system-packages
-                    cd ../cpu-disk-mem-alerts
+                '''
+            }
+        }
+        stage('Container Alerts: Syntax check') {
+            when { changeset "scripts/container-service-alerts/**" }
+            steps {
+                sh 'python3 -m py_compile scripts/container-service-alerts/check-container-status.py'
+            }
+        }
+        stage('Resource Alerts: Install deps') {
+            when { changeset "scripts/cpu-disk-mem-alerts/**" }
+            steps {
+                sh '''
+                    cd scripts/cpu-disk-mem-alerts
                     pip install -r requirements.txt --break-system-packages
                 '''
             }
         }
-        stage('Syntax check') {
+        stage('Resource Alerts: Syntax check') {
+            when { changeset "scripts/cpu-disk-mem-alerts/**" }
             steps {
-                sh '''
-                    python3 -m py_compile scripts/container-service-alerts/check-container-status.py
-                    python3 -m py_compile scripts/cpu-disk-mem-alerts/main.py
-                '''
+                sh 'python3 -m py_compile scripts/cpu-disk-mem-alerts/main.py'
             }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline finished. Only stages matching changed files actually ran.'
         }
     }
 }
