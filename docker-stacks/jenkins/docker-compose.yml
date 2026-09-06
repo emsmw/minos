@@ -3,6 +3,8 @@ services:
     image: jenkins/jenkins:lts
     container_name: jenkins
     restart: unless-stopped
+    group_add:
+      - "994"
     ports:
       - "8080:8080"
       - "50000:50000"
