@@ -3,3 +3,4 @@ __pycache__/
 .venv/
 config_secret.py
 .container_state.json
+docker-stacks/arr/.env
