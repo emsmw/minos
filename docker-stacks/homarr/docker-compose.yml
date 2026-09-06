@@ -1,0 +1,22 @@
+version: '3'
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Docker/docker_volumes/homarr/configs:/app/data/configs
+      - /Docker/docker_volumes/homarr/icons:/app/public/icons
+    ports:
+      - '7575:7575'
+    networks:
+      homarr_net:
+        ipv4_address: 172.30.10.10  # Optional: gives Homarr a static IP
+
+networks:
+  homarr_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.10.0/24  # This is a much smaller, safer range
