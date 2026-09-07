@@ -47,20 +47,20 @@ Ping StatusCake heartbeat (every 5 min)
 
 > _Screenshot of Discord alert when container goes down notification_
 
-![Discord Alert Notification](alert.png)
+![Discord Alert Notification](images/alert.png)
 > _Screenshot of Discord recovery notification_
 
-![Discord Alert Notification](recovery.png)
+![Discord Alert Notification](images/recovery.png)
 
 ## StatusCake Discord Alerts
 
 > _Screenshot of StatusCake Discord server down notification_
 
-![Discord Alert Notification](server_down.png)
+![Discord Alert Notification](images/server_down.png)
 
 > _Screenshot of StatusCake Discord server back up notification_
 
-![Discord Alert Notification](server_up.png)
+![Discord Alert Notification](images/server_up.png)
 
 
 The script pings a StatusCake push monitor URL every 5 minutes. If the ping stops arriving because the server is down, StatusCake send alert independently.
