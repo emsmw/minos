@@ -235,17 +235,6 @@ Container unchanged                 = 🔇 Silent
 - External heartbeat monitoring as a watchdog pattern
 - The difference between container `status` and health check `status` in Docker
 
-## What's Next
-- [ ] qBittorrent download stall detection
-- [ ] Disk and memory threshold alerts
-- [ ] Prometheus metrics endpoint
-- [ ] Grafana dashboard
-- [ ] Kubernetes migration
-- [ ] and more..
-
-## Why I Built This
-I'm a network architect pivoting into Site Reliability Engineering. Building real monitoring tools for infrastructure I actually operate teaches me more than any tutorial. This project mirrors what I observed in day to day work, just on a smaller scale.
-
 The skills practiced here:
 - Infrastructure monitoring design
 - Python automation
