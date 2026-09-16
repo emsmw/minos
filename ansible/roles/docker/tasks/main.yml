@@ -1,0 +1,16 @@
+---
+- name: Check if Docker is already installed
+  command: docker --version
+  register: docker_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Docker via official script
+  shell: curl -fsSL https://get.docker.com | sh
+  when: docker_check.rc != 0
+
+- name: Add user to docker group
+  user:
+    name: mwemily
+    groups: docker
+    append: true
