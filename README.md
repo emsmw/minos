@@ -42,6 +42,13 @@ Git is the single source of truth on both sides of this diagram: Jenkins validat
 ```text
 minos/
 ├── Jenkinsfile              # CI pipeline — path-scoped stages
+├── ansible/                 # Host provisioning — base packages, Docker, firewall
+│   ├── inventory/
+│   ├── roles/
+│   │   ├── base/
+│   │   ├── docker/
+│   │   └── firewall/
+│   └── site.yml
 ├── docker-stacks/           # docker-compose definitions, one folder per stack
 │   ├── arr/                 # VPN'd media-acquisition stack
 │   ├── grafana/
@@ -54,6 +61,18 @@ minos/
     ├── container-service-alerts/   # Docker container health monitoring + Discord alerts + StatusCake heartbeat when the server itself is down
     └── cpu-disk-mem-alerts/        # CPU/memory/disk usage monitoring
 ```
+
+## Host provisioning (`ansible/`)
+
+Before any Docker stack runs, the `minos` host itself is provisioned with a single Ansible playbook (`ansible/site.yml`) rather than by hand — this is what makes the underlying box reproducible, not just the services on top of it. Three roles, applied in order:
+
+- **`base`** — updates the apt cache and installs the packages the rest of the system assumes are present (`curl`, `git`, `unattended-upgrades`).
+- **`docker`** — installs Docker via the official convenience script, but only if it isn't already present (`command: docker --version` is checked first, so re-running the playbook never reinstalls), and adds the host user to the `docker` group.
+- **`firewall`** — installs and enables `ufw` with a default-deny policy, explicitly allowing only the ports each running stack actually needs: SSH (`22`), Jenkins UI/agent (`8080`/`50000`), Prometheus (`9090`), Navidrome (`4533`), Jellyfin (`8096`), Homarr (`7575`), Grafana (`3000`), Portainer (`8000`/`9443`), Radarr (`7878`), Sonarr (`8989`), and the `gluetun`-routed ports for the VPN'd side of the `arr` stack (`6881`, `8085`, `8191`, `9696`).
+
+The playbook is run from a separate control node (a laptop, over WSL) against `minos` as the managed node, connecting over SSH with a dedicated key scoped only to Ansible — not the same key used for GitHub access. Keeping control node and managed node separate now is deliberate: it's the same pattern needed the moment a second host (e.g. a cloud build agent or offsite backup target) joins the inventory, so nothing about the setup has to change later, just an added entry in `inventory/hosts.yml`.
+
+Verified idempotent before merging: a second run of `ansible-playbook site.yml` against an already-provisioned host reports `changed=0` across all 23 tasks — confirming the playbook only ever converges state, it doesn't redo work or drift the host on repeat runs.
 
 ## Services (`docker-stacks/`)
 
@@ -107,6 +126,7 @@ This keeps the pipeline fast and makes it obvious from the build log which part 
 | Layer | Tools |
 |---|---|
 | Host OS | Debian 13 (bare metal) |
+| Provisioning | Ansible (host bootstrap: base packages, Docker install, `ufw` firewall) |
 | Orchestration | Docker / Docker Compose, Portainer (GitOps stack deployments) |
 | CI/CD | Jenkins, custom Python build agent |
 | Monitoring | Python (`psutil`, `docker` SDK, `colorama`), Prometheus, Grafana |
