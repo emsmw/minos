@@ -1,0 +1,106 @@
+---
+- name: Install ufw
+  apt:
+    name: ufw
+    state: present
+
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+- name: Allow Jenkins UI
+  ufw:
+    rule: allow
+    port: '8080'
+    proto: tcp
+
+- name: Allow Jenkins agent
+  ufw:
+    rule: allow
+    port: '50000'
+    proto: tcp
+
+- name: Allow Prometheus
+  ufw:
+    rule: allow
+    port: '9090'
+    proto: tcp
+
+- name: Allow Navidrome
+  ufw:
+    rule: allow
+    port: '4533'
+    proto: tcp
+
+- name: Allow Jellyfin
+  ufw:
+    rule: allow
+    port: '8096'
+    proto: tcp
+
+- name: Allow Homarr
+  ufw:
+    rule: allow
+    port: '7575'
+    proto: tcp
+
+- name: Allow Grafana
+  ufw:
+    rule: allow
+    port: '3000'
+    proto: tcp
+
+- name: Allow Portainer edge agent
+  ufw:
+    rule: allow
+    port: '8000'
+    proto: tcp
+
+- name: Allow Portainer HTTPS
+  ufw:
+    rule: allow
+    port: '9443'
+    proto: tcp
+
+- name: Allow Radarr
+  ufw:
+    rule: allow
+    port: '7878'
+    proto: tcp
+
+- name: Allow Sonarr
+  ufw:
+    rule: allow
+    port: '8989'
+    proto: tcp
+
+- name: Allow gluetun torrent port
+  ufw:
+    rule: allow
+    port: '6881'
+    proto: tcp
+
+- name: Allow gluetun (qBittorrent WebUI via gluetun)
+  ufw:
+    rule: allow
+    port: '8085'
+    proto: tcp
+
+- name: Allow gluetun (FlareSolverr via gluetun)
+  ufw:
+    rule: allow
+    port: '8191'
+    proto: tcp
+
+- name: Allow gluetun (Prowlarr via gluetun)
+  ufw:
+    rule: allow
+    port: '9696'
+    proto: tcp
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny

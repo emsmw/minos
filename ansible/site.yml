@@ -1,0 +1,8 @@
+---
+- name: Provision minos host
+  hosts: minos
+  become: true
+  roles:
+    - base
+    - docker
+    - firewall
