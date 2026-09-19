@@ -6,3 +6,4 @@
     - base
     - docker
     - firewall
+    - k3s
