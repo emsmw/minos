@@ -100,6 +100,18 @@
     port: '9696'
     proto: tcp
 
+- name: Allow k3s API server
+  ufw:
+    rule: allow
+    port: '6443'
+    proto: tcp
+
+- name: Allow k3s flannel VXLAN
+  ufw:
+    rule: allow
+    port: '8472'
+    proto: udp
+
 - name: Enable UFW
   ufw:
     state: enabled

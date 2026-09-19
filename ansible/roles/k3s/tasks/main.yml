@@ -1,0 +1,20 @@
+---
+- name: Check if k3s binary exists
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Install k3s
+  shell: curl -sfL https://get.k3s.io | sh -
+  when: not k3s_binary.stat.exists
+
+- name: Ensure k3s service is enabled and running
+  systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Allow kubeconfig read access for non-root user
+  file:
+    path: /etc/rancher/k3s/k3s.yaml
+    mode: '0644'
