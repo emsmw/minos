@@ -1,2 +1,36 @@
 ---
-# defaults file for firewall
+# Host firewall: ufw is the single firewall manager on minos.
+# firewalld must not run alongside it (its INPUT rules override ufw's).
+
+firewall_tcp_ports:
+  - { port: 22,    comment: SSH }
+  - { port: 8080,  comment: Jenkins UI }
+  - { port: 50000, comment: Jenkins agent }
+  - { port: 9090,  comment: Prometheus }
+  - { port: 4533,  comment: Navidrome }
+  - { port: 8096,  comment: Jellyfin }
+  - { port: 7575,  comment: Homarr }
+  - { port: 3000,  comment: Grafana }
+  - { port: 8000,  comment: Portainer edge agent }
+  - { port: 9443,  comment: Portainer HTTPS }
+  - { port: 7878,  comment: Radarr }
+  - { port: 8989,  comment: Sonarr }
+  - { port: 6881,  comment: gluetun torrent port }
+  - { port: 8085,  comment: qBittorrent WebUI via gluetun }
+  - { port: 8191,  comment: FlareSolverr via gluetun }
+  - { port: 9696,  comment: Prowlarr via gluetun }
+  - { port: 6443,  comment: k3s API server }
+
+firewall_udp_ports:
+  - { port: 8472, comment: k3s flannel VXLAN }
+
+# Sources allowed to reach any host port (containers and k3s pods/services).
+firewall_trusted_subnets:
+  - { cidr: 172.16.0.0/12, comment: Docker bridge networks }
+  - { cidr: 10.42.0.0/16,  comment: k3s pod network }
+  - { cidr: 10.43.0.0/16,  comment: k3s service network }
+
+# Ports reachable from the LAN only.
+firewall_lan_cidr: 192.168.2.0/24
+firewall_lan_tcp_ports:
+  - { port: 5900, comment: x11vnc }

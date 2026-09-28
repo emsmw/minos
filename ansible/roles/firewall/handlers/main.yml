@@ -1,2 +1,12 @@
 ---
-# handlers file for firewall
+# Only fire when firewalld was actually shut down: Docker and k3s
+# re-create the iptables rules that firewalld's shutdown removed.
+- name: firewall | restart docker
+  systemd:
+    name: docker
+    state: restarted
+
+- name: firewall | restart k3s
+  systemd:
+    name: k3s
+    state: restarted
