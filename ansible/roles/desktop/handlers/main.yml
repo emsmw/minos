@@ -1,0 +1,11 @@
+---
+- name: desktop | restart x11vnc
+  systemd:
+    name: x11vnc
+    state: restarted
+    daemon_reload: true
+
+# Restarting GDM would kill the logged-in desktop, so only tell the operator.
+- name: desktop | gdm restart needed
+  debug:
+    msg: WaylandEnable changed. Run 'sudo systemctl restart gdm' (or reboot) to apply.
