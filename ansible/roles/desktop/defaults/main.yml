@@ -1,0 +1,4 @@
+---
+desktop_user: mwemily
+desktop_uid: 1000
+desktop_vnc_passwd_file: "/home/{{ desktop_user }}/.vnc/passwd"

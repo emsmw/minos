@@ -1,0 +1,50 @@
+---
+# x11vnc can only share an Xorg session. GNOME on Debian 13 defaults to
+# Wayland, where the gdm Xauthority file the unit points at does not exist.
+
+- name: Install x11vnc
+  apt:
+    name: x11vnc
+    state: present
+
+- name: Check for GDM config
+  stat:
+    path: /etc/gdm3/daemon.conf
+  register: gdm_conf
+
+- name: Disable Wayland in GDM (use Xorg)
+  lineinfile:
+    path: /etc/gdm3/daemon.conf
+    regexp: '^#?\s*WaylandEnable='
+    line: WaylandEnable=false
+    insertafter: '^\[daemon\]'
+  when: gdm_conf.stat.exists
+  notify: desktop | gdm restart needed
+
+- name: Check for x11vnc password file
+  stat:
+    path: "{{ desktop_vnc_passwd_file }}"
+  register: vnc_passwd
+
+- name: Require x11vnc password file (secret, not stored in git)
+  assert:
+    that: vnc_passwd.stat.exists
+    fail_msg: >-
+      {{ desktop_vnc_passwd_file }} is missing. Create it on the host with:
+      mkdir -p ~/.vnc && x11vnc -storepasswd ~/.vnc/passwd
+
+- name: Install x11vnc systemd unit
+  template:
+    src: x11vnc.service.j2
+    dest: /etc/systemd/system/x11vnc.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: desktop | restart x11vnc
+
+- name: Enable and start x11vnc
+  systemd:
+    name: x11vnc
+    enabled: true
+    state: started
+    daemon_reload: true
